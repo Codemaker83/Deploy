@@ -1,0 +1,33 @@
+- hosts: local
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Start a new instance conatiner
+      docker:
+        image: "{{ instance_image_name }}"
+        name: "{{ instance_name }}"
+        command: "/entry_point.py"
+        hostname: "{{ instance_hostname }}"
+        ports:
+          - "{{ odoo_xmlrpc_mapped_port }}:8069"
+          - "{{ odoo_longpoll_mapped_port }}:8072"
+        env: "DB_HOST={{ db_server }},DBFILTER={{ db_filter }},DB_NAME={{ db_name }},DB_USER={{ db_user }},DB_PASSWORD={{db_password }},WITHOUT_DEMO=False,ODOO_CONFIG_FILE={{ odoo_config_file }}"
+        volumes:
+          - "{{ instance_volume }}/ssh:/home/odoo/.ssh"
+          - "{{ instance_volume }}/logs:/var/log/supervisor"
+          - "{{ instance_volume }}/odoodata:/home/odoo/datadir"
+          - "{{ instance_volume }}/tmp:/tmp"
+
+    - name: Drop database if exists
+      postgresql_db:
+        name: vauxoo80
+        state: absent
+        login_user: odoo80
+
+    - name: Create database
+      postgresql_db:
+        name: vauxoo80
+        encoding: 'UTF-8'
+        template: template1
+        login_user: odoo80

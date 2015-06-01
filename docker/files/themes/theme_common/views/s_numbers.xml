@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<openerp>
+  <data>
+
+    <template name="Numbers" id="s_numbers">
+      <section class="s_numbers bg-gray-darker">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-3 mb32 text-center">
+              <h1 class="mb0 text-primary">12</h1>
+              <p class="text-primary">Useful options</p>
+            </div>
+            <div class="col-md-3 mb32 text-center">
+              <h1 class="mb0 text-primary">45</h1>
+              <p class="text-primary">Beautiful snippets</p>
+            </div>
+            <div class="col-md-3 mb32 text-center">
+              <h1 class="mb0 text-success">8</h1>
+              <p class="text-success">Amazing pages</p>
+            </div>
+            <div class="col-md-3 mb32 text-center">
+              <h1 class="mb0 text-success">37</h1>
+              <p class="text-success">Outstanding images</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
+
+  </data>
+</openerp>

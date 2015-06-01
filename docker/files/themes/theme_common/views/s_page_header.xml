@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<openerp>
+  <data>
+
+    <template name="Page header" id="s_page_header">
+      <section class="s_page_header bg-gray-darker">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 mt32">
+              <span class="s_label label bg-alpha"><strong>Tags</strong></span><span class="s_label label bg-beta"><strong>Category</strong></span>
+              <h1>Page Title</h1>
+              <p class="lead">Introduce your content in few lines.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
+
+  </data>
+</openerp>

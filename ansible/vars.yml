@@ -1,0 +1,35 @@
+## Client unique name
+client_name: vauxoo
+
+## User's key path
+ssh_pub_key: ~/.ssh/id_rsa.pub
+ssh_priv_key: ~/.ssh/id_rsa
+
+
+instance_volume: "{{ lookup('env','HOME') }}/odoo80_data"
+#instance_image_name: quay.io/vauxoo/vauxoo80
+instance_image_name: vauxoo-pre80
+instance_name: vauxoo-odoo80
+instance_hostname: prod80.vauxoo.com
+
+
+odoo_xmlrpc_mapped_port: 8069
+odoo_longpoll_mapped_port: 8072
+odoo_config_file: "/home/odoo/.openerp_serverrc"
+odoo_server_name: "{{ client_name }}_odoo_server"
+image_name: "{{ client_name }}_odoo_image"
+
+db_server: "172.17.42.1"
+db_filter: "vauxoo80.*"
+db_name: vauxoo80
+db_user: odoo80
+db_password: mU9kvz9crdH9CaFPWB
+
+## Dockerfile location that will be used to build de image
+# By default uses docker folder in the users home
+dockerfile_path: "{{ app_module }}/deployment_files/docker"
+
+## Path where the volumes will be mounted
+# By default uses data_volume folder in the users home
+data_path: "{{ app_module }}/deployment_files/docker/data_volumes"
+

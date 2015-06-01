@@ -1,0 +1,72 @@
+- hosts: local
+  vars_files:
+    - vars.yml
+
+  tasks:
+  - name: Let the private key be available for docker build process
+    shell: cp {{ ssh_priv_key }} "/home/production70/odoo80_files/docker/files"
+
+  - name: Drop previous image
+    docker_image:
+      path: "/home/production70/odoo80_files/docker"
+      name: "{{ instance_image_name }}"
+      state: absent
+
+  - name: Build the local Odoo image
+    docker_image:
+      path: "/home/production70/odoo80_files/docker"
+      name: "{{ instance_image_name }}"
+      state: build
+      nocache: yes
+      tag: test
+
+  - name: Drop the previous container
+    docker:
+      image: "{{ instance_image_name }}:test"
+      name: "{{ instance_name }}"
+      state: absent
+
+  - name: Drop database if exists
+    postgresql_db:
+      name: vauxoo80
+      state: absent
+      login_user: odoo80
+
+  - name: Create database
+    postgresql_db:
+      name: vauxoo80
+      encoding: 'UTF-8'
+      template: template1
+      login_user: odoo80
+
+  - name: Load migrated dump
+    shell: psql -f /home/production70/odoo80_files/Vauxoo8.0-prepare/dbs_migrated/migrated.sql -d vauxoo80 -U odoo80
+
+  - name: Run DeprecatedModules.sql
+    shell: psql -f /home/production70/odoo80_files/Vauxoo8.0-prepare/PostOdooWork/DeprecatedModules.sql -d vauxoo80 -U odoo80
+
+  - name: Run UninstallModules.sql
+    shell: psql -f /home/production70/odoo80_files/Vauxoo8.0-prepare/PostOdooWork/UninstallModules.sql -d vauxoo80 -U odoo80
+
+  - name: Drop container if exists
+    docker:
+      image: "{{ instance_image_name }}:test"
+      name: "{{ instance_name }}"
+      state: absent
+
+  - name: Uptate all
+    docker:
+      image: "{{ instance_image_name }}:test"
+      name: "{{ instance_name }}"
+      command: "/update_all.sh > /tmp/global.log"
+      hostname: "{{ instance_hostname }}"
+      ports:
+        - "{{ odoo_xmlrpc_mapped_port }}:8069"
+        - "{{ odoo_longpoll_mapped_port }}:8072"
+      env: "DB_HOST={{ db_server }},DBFILTER={{ db_filter }},DB_NAME={{ db_name }},DB_USER={{ db_user }},DB_PASSWORD={{db_password }},WITHOUT_DEMO=False,ODOO_CONFIG_FILE={{ odoo_config_file }}"
+      volumes:
+        - "{{ instance_volume }}/ssh:/home/odoo/.ssh"
+        - "{{ instance_volume }}/logs:/var/log/supervisor"
+        - "{{ instance_volume }}/odoodata:/home/odoo/datadir"
+        - "{{ instance_volume }}/tmp:/tmp"
+    
